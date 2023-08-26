@@ -1,0 +1,8 @@
+{
+  "python.formatting.provider": "black",
+  "python.analysis.typeCheckingMode": "strict",
+  "ruff.enable": false,
+  "python.testing.pytestArgs": ["."],
+  "python.testing.unittestEnabled": false,
+  "python.testing.pytestEnabled": true
+}
