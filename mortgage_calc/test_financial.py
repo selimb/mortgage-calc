@@ -64,14 +64,7 @@ class Test_amortize:
 
         schedule = amortize(mortgage, rate_monthly, months)
 
-        print(
-            "\n".join(
-                [
-                    f"{i.payment_number} {i.principal} {i.interest} {i.balance}"
-                    for i in (i.rounded() for i in schedule)
-                ]
-            )
-        )
+        print(fmt_schedule(schedule))
 
         first = schedule[0]
         assert first.rounded() == AmortizeItem(
@@ -99,3 +92,37 @@ class Test_amortize:
 
         last = schedule[-1].rounded()
         assert f"{last.principal_total} {last.balance} {last.interest_total}" == "300000 0 223444"
+
+    def test_using_last_simple(self) -> None:
+        mortgage = 300_000
+        months_total = 25 * 12
+        rate_monthly = rate_calc(5 / 100)
+
+        # 2 years fixed
+        schedule1 = amortize(mortgage, rate_monthly, months_total)[: 2 * 12]
+
+        # 2*1year fixed, same rate
+        schedule2_1 = amortize(mortgage, rate_monthly, months_total)[: 1 * 12]
+        it = schedule2_1[-1]
+        assert it.payment_number == 12
+        schedule2_2 = amortize(
+            mortgage - it.principal_total,
+            rate_monthly,
+            months_total - it.payment_number,
+            last=it,
+        )[: 1 * 12]
+
+        print("schedule1\n" + fmt_schedule(schedule1))
+        print("schedule2_1\n" + fmt_schedule(schedule2_1))
+        print("schedule2_2\n" + fmt_schedule(schedule2_2))
+
+        assert schedule1[-1] == schedule2_2[-1]
+
+
+def fmt_schedule(schedule: list[AmortizeItem]) -> str:
+    return "\n".join(
+        [
+            f"{i.payment_number} {i.payment} {i.principal} {i.interest} {i.balance}"
+            for i in (i.rounded() for i in schedule)
+        ]
+    )
