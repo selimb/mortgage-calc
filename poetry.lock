@@ -1511,6 +1511,20 @@ files = [
 ]
 
 [[package]]
+name = "numpy-financial"
+version = "1.0.0"
+description = "Simple financial functions"
+optional = false
+python-versions = ">=3.5"
+files = [
+    {file = "numpy-financial-1.0.0.tar.gz", hash = "sha256:f84341bc62b2485d5604a73d5fac7e91975b4b9cd5f4a5a9cf608902ea00cb40"},
+    {file = "numpy_financial-1.0.0-py3-none-any.whl", hash = "sha256:bae534b357516f12258862d1f0181d911032d0467f215bfcd1c264b4da579047"},
+]
+
+[package.dependencies]
+numpy = ">=1.15"
+
+[[package]]
 name = "overrides"
 version = "7.4.0"
 description = "A decorator to automatically detect mismatch when overriding a method."
@@ -2466,4 +2480,4 @@ test = ["websockets"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "8275bbef2aba41d2d1dceda71a0cdf08299f7c2b20e86b4bccddec9ba00d06d3"
+content-hash = "4fd730d0965b78383d6508d43e92ccd881424ba8898613ac20ded279f4aaf907"
