@@ -20,9 +20,10 @@ def PMT(rate: float, payments_count: int, principal: float) -> float:
     return (r * P) / (1 - (1 + r) ** (-N))
 
 
-def rate_calc(
-    rate_annual: float, compound: Literal["semi-annual", "month"] = "semi-annual"
-) -> float:
+RateCalcCompound = Literal["semi-annual", "month"]
+
+
+def rate_calc(rate_annual: float, compound: RateCalcCompound = "semi-annual") -> float:
     """
     Calculates monthly interest rate for different compounding methods.
 
@@ -75,13 +76,13 @@ MONTHS_PER_YEAR = 12
 
 def amortize(
     loan_amount: float,
-    rate_monthly: float,
     loan_term: int,
+    rate_monthly: float,
     *,
     last: AmortizeItem | None = None,
 ) -> list[AmortizeItem]:
     """
-    Returns the amortization schedule for a loan.
+    Computes the amortization schedule for a loan at a single fixed rate.
 
     :param loan_amount: Loan amount.
     :param rate_monthly: Monthly interest rate, as calculated by `rate_calc`.
@@ -101,16 +102,18 @@ def amortize(
 
         schedule1 = amortize(
             mortgage,
-            rate1,
             loan_term
+            rate1,
         )[: rate1_period]
 
         schedule2 = amortize(
             mortgage - schedule[-1].principal_total,
-            rate2,
             loan_term - rate2_period,
+            rate2,
             last=schedule[-1],
         )[: rate2_period]
+
+    You can also re-finance
     """
     number = 1 if last is None else last.payment_number + 1
     principal_total = 0 if last is None else last.principal_total

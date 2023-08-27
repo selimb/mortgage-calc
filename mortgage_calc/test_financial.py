@@ -86,17 +86,17 @@ class Test_amortize:
         rate_monthly = rate_calc(5 / 100)
 
         # 2 years fixed
-        schedule1 = amortize(mortgage, rate_monthly, months_total)[: 2 * 12]
+        schedule1 = amortize(mortgage, months_total, rate_monthly)[: 2 * 12]
 
         # 2 * (1 year fixed), same rate
-        schedule2_1 = amortize(mortgage, rate_monthly, months_total)[: 1 * 12]
-        it = schedule2_1[-1]
-        assert it.payment_number == 12
+        schedule2_1 = amortize(mortgage, months_total, rate_monthly)[: 1 * 12]
+        last = schedule2_1[-1]
+        assert last.payment_number == 12
         schedule2_2 = amortize(
-            mortgage - it.principal_total,
+            mortgage - last.principal_total,
+            months_total - last.payment_number,
             rate_monthly,
-            months_total - it.payment_number,
-            last=it,
+            last=last,
         )[: 1 * 12]
 
         # Debugging
