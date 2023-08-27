@@ -76,14 +76,46 @@ MONTHS_PER_YEAR = 12
 def amortize(
     loan_amount: float,
     rate_monthly: float,
-    payments_count: int,
+    loan_term: int,
     *,
     last: AmortizeItem | None = None,
 ) -> list[AmortizeItem]:
+    """
+    Returns the amortization schedule for a loan.
+
+    :param loan_amount: Loan amount.
+    :param rate_monthly: Monthly interest rate, as calculated by `rate_calc`.
+    :param loan_term: Total length of the loan in months. Usually 300 (25 years).
+    :param last: Last amortization item. See below.
+
+    To compute an amortization schedule with varying interest rates, use the following:
+
+        mortgage = 300_000
+        loan_term = 25*12
+        # 3 years @ 5%
+        rate1 = rate_calc(0.05)
+        rate1_period = 3*12
+        # 2 years @ 4%
+        rate2 = rate_calc(0.04)
+        rate2_period = 2*12
+
+        schedule1 = amortize(
+            mortgage,
+            rate1,
+            loan_term
+        )[: rate1_period]
+
+        schedule2 = amortize(
+            mortgage - schedule[-1].principal_total,
+            rate2,
+            loan_term - rate2_period,
+            last=schedule[-1],
+        )[: rate2_period]
+    """
     number = 1 if last is None else last.payment_number + 1
     principal_total = 0 if last is None else last.principal_total
     interest_total = 0 if last is None else last.interest_total
-    payment = PMT(rate_monthly, payments_count, loan_amount)
+    payment = PMT(rate_monthly, loan_term, loan_amount)
     ret: list[AmortizeItem] = []
     balance = loan_amount
     while True:

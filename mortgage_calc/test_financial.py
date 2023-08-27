@@ -1,6 +1,6 @@
 import doctest
 from . import financial
-from .financial import IPMT, PMT, AmortizeItem, amortize, rate_calc
+from .financial import PMT, AmortizeItem, amortize, rate_calc
 
 
 def test_doctest() -> None:
@@ -19,23 +19,6 @@ class Test_PMT:
 
         result = PMT(rate=rate_annual / 12, payments_count=payments_count, principal=principal)
         assert round(result, 2) == 1_037.03
-
-
-class Test_IPMT:
-    def test_example_excel(self) -> None:
-        """
-        Numbers from https://support.microsoft.com/en-au/office/ipmt-function-5cce0ad6-8402-4a41-8d29-61a0b054cb6f
-        """
-        rate_annual = 10 / 100
-        period = 1
-        years = 3
-        loan = 8_000
-
-        result = IPMT(rate_annual / 12, period, years * 12, loan)
-        assert round(result, 2) == 66.67
-
-        result = IPMT(rate_annual, 3, years, loan)
-        assert round(result, 2) == 292.45
 
 
 class Test_rate_calc:
@@ -93,7 +76,11 @@ class Test_amortize:
         last = schedule[-1].rounded()
         assert f"{last.principal_total} {last.balance} {last.interest_total}" == "300000 0 223444"
 
-    def test_using_last_simple(self) -> None:
+    def test_multi_trivial(self) -> None:
+        """
+        It's hard to get accurate examples, so this instead tests a trivial case: 2-year schedule
+        two 1-year schedule, using the same rate.
+        """
         mortgage = 300_000
         months_total = 25 * 12
         rate_monthly = rate_calc(5 / 100)
@@ -101,7 +88,7 @@ class Test_amortize:
         # 2 years fixed
         schedule1 = amortize(mortgage, rate_monthly, months_total)[: 2 * 12]
 
-        # 2*1year fixed, same rate
+        # 2 * (1 year fixed), same rate
         schedule2_1 = amortize(mortgage, rate_monthly, months_total)[: 1 * 12]
         it = schedule2_1[-1]
         assert it.payment_number == 12
@@ -112,9 +99,10 @@ class Test_amortize:
             last=it,
         )[: 1 * 12]
 
-        print("schedule1\n" + fmt_schedule(schedule1))
-        print("schedule2_1\n" + fmt_schedule(schedule2_1))
-        print("schedule2_2\n" + fmt_schedule(schedule2_2))
+        # Debugging
+        # print("schedule1\n" + fmt_schedule(schedule1))
+        # print("schedule2_1\n" + fmt_schedule(schedule2_1))
+        # print("schedule2_2\n" + fmt_schedule(schedule2_2))
 
         assert schedule1[-1] == schedule2_2[-1]
 
