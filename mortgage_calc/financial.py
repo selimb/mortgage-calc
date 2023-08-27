@@ -1,6 +1,5 @@
 from __future__ import annotations
 import dataclasses
-import numpy_financial as nf
 from typing import Literal
 from typing_extensions import assert_never
 
@@ -19,11 +18,6 @@ def PMT(rate: float, payments_count: int, principal: float) -> float:
     P = principal
 
     return (r * P) / (1 - (1 + r) ** (-N))
-
-
-def IPMT(rate: float, payment_number: int, payments_count: int, principal: float) -> float:
-    """Like IPMT from excel."""
-    return float(nf.ipmt(rate, payment_number, payments_count, principal)) * -1
 
 
 def rate_calc(
