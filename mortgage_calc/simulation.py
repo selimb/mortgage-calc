@@ -8,7 +8,12 @@ class RateOverPeriod(NamedTuple):
     months: int
 
 
-def simulate(mortgage: float, months_total: int, rates: list[RateOverPeriod]) -> list[AmortizeItem]:
+def simulate(
+    mortgage: float,
+    months_total: int,
+    rates: list[RateOverPeriod],
+    extrapolate: bool = True,
+) -> list[AmortizeItem]:
     ret: list[AmortizeItem] = []
 
     balance = mortgage
@@ -27,8 +32,7 @@ def simulate(mortgage: float, months_total: int, rates: list[RateOverPeriod]) ->
         balance = last.balance
         months_left = months_total - last.payment_number
 
-    if balance > 0:
-        print(balance, rates[-1].rate_annual, months_left)
+    if balance > 0 and extrapolate:
         term_schedule = amortize(
             balance,
             rate_calc(rates[-1].rate_annual),
